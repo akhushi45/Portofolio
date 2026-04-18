@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jordan Voss — Director & Filmmaker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Barlow+Condensed:wght@300;400;500;600;700&family=Barlow:wght@300;400&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --black: #050505;
+      --deep: #0c0c0c;
+      --surface: #111;
+      --surface2: #181818;
+      --gold: #c9a96e;
+      --gold-dim: rgba(201,169,110,0.35);
+      --white: #f0ece4;
+      --muted: #6b6560;
+      --border: rgba(201,169,110,0.12);
+      --font-display: 'Cormorant Garamond', serif;
+      --font-ui: 'Barlow Condensed', sans-serif;
+      --font-body: 'Barlow', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: var(--black); color: var(--white); font-family: var(--font-body); overflow-x: hidden; cursor: none; }
+    body::after {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 9000; opacity: .03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+    .cursor-dot { width:8px;height:8px;background:var(--gold);border-radius:50%;position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%);transition:width .2s,height .2s,background .2s; }
+    .cursor-cross { width:32px;height:32px;position:fixed;z-index:9998;pointer-events:none;transform:translate(-50%,-50%);transition:transform .14s ease; }
+    .cursor-cross::before,.cursor-cross::after { content:'';position:absolute;background:rgba(201,169,110,0.55); }
+    .cursor-cross::before { width:1px;height:100%;left:50%;top:0; }
+    .cursor-cross::after  { width:100%;height:1px;top:50%;left:0; }
+    ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--black)}::-webkit-scrollbar-thumb{background:var(--gold-dim)}
+
+    /* NAV */
+    nav { position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;height:72px;transition:background .5s,border-color .5s;border-bottom:1px solid transparent; }
+    nav.scrolled { background:rgba(5,5,5,0.94);backdrop-filter:blur(20px);border-color:var(--border); }
+    .nav-logo { font-family:var(--font-display);font-size:1.55rem;font-weight:300;letter-spacing:.25em;text-transform:uppercase;color:var(--white);text-decoration:none; }
+    .nav-logo span { color:var(--gold); }
+    nav ul { list-style:none;display:flex;gap:2.5rem;align-items:center; }
+    nav ul a { font-family:var(--font-ui);font-size:.72rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s; }
+    nav ul a:hover { color:var(--gold); }
+    .nav-hire { border:1px solid var(--gold-dim)!important;padding:.45rem 1.2rem;color:var(--gold)!important;transition:background .25s,color .25s!important; }
+    .nav-hire:hover { background:var(--gold)!important;color:var(--black)!important; }
+
+    /* HERO */
+    #hero { height:100vh;position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0 5vw 6vh;overflow:hidden; }
+    .lbox { position:absolute;left:0;right:0;z-index:3;background:var(--black); }
+    .lbox-t { top:0;height:72px; }
+    .lbox-b { bottom:0;height:60px; }
+    .hero-video-wrap { position:absolute;inset:0;z-index:1;overflow:hidden;background:#000; }
+    .hero-video-wrap iframe { position:absolute;top:50%;left:50%;width:177.78vh;height:100%;min-width:100%;min-height:56.25vw;transform:translate(-50%,-50%);pointer-events:none;border:none; }
+    .hero-overlay { position:absolute;inset:0;z-index:2;background:linear-gradient(to bottom,rgba(5,5,5,.3) 0%,rgba(5,5,5,0) 25%,rgba(5,5,5,.8) 100%),linear-gradient(to right,rgba(5,5,5,.7) 0%,transparent 60%); }
+    .film-strip { position:absolute;left:3vw;top:0;bottom:0;z-index:4;width:24px;display:flex;flex-direction:column;justify-content:space-evenly;align-items:center;opacity:.15; }
+    .perf { width:14px;height:20px;border:1.5px solid var(--white);border-radius:3px;flex-shrink:0; }
+    .timecode { position:absolute;top:80px;right:5vw;z-index:4;font-family:var(--font-ui);font-size:.62rem;letter-spacing:.18em;color:rgba(201,169,110,.35); }
+    .hero-content { position:relative;z-index:4; }
+    .hero-eyebrow { font-family:var(--font-ui);font-size:.7rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:1rem;opacity:0;animation:fadeUp .8s .3s forwards; }
+    .hero-eyebrow::before { content:'';display:block;width:40px;height:1px;background:var(--gold); }
+    .hero-name { font-family:var(--font-display);font-size:clamp(4rem,10vw,9.5rem);font-weight:300;line-height:.88;letter-spacing:-.01em;margin-bottom:1.4rem;opacity:0;animation:fadeUp .9s .45s forwards; }
+    .hero-name em { font-style:italic;color:var(--gold); }
+    .hero-tag { font-family:var(--font-display);font-size:clamp(1rem,1.8vw,1.35rem);font-weight:300;font-style:italic;color:rgba(240,236,228,.5);max-width:520px;line-height:1.6;margin-bottom:2.5rem;opacity:0;animation:fadeUp .9s .6s forwards; }
+    .hero-btns { display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .75s forwards; }
+    .btn-gold { background:var(--gold);color:var(--black);padding:.85rem 2.2rem;font-family:var(--font-ui);font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;border:none;cursor:none;display:inline-flex;align-items:center;gap:.7rem;transition:background .25s,transform .2s; }
+    .btn-gold:hover { background:#dfc080;transform:translateY(-2px); }
+    .btn-ol { background:transparent;color:var(--white);padding:.85rem 2.2rem;border:1px solid rgba(240,236,228,.2);font-family:var(--font-ui);font-size:.72rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;cursor:none;display:inline-flex;align-items:center;gap:.7rem;transition:border-color .25s,color .25s,transform .2s; }
+    .btn-ol:hover { border-color:var(--gold);color:var(--gold);transform:translateY(-2px); }
+    .scroll-hint { position:absolute;bottom:70px;right:5vw;z-index:4;display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:var(--font-ui);font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);opacity:0;animation:fadeUp .8s 1.2s forwards; }
+    .scroll-rod { width:1px;height:50px;background:linear-gradient(to bottom,var(--gold),transparent);animation:pulseRod 2s 1.8s infinite; }
+
+    /* DIVIDER */
+    .divider { display:flex;align-items:center;gap:1.5rem;padding:0 5vw;opacity:.22; }
+    .divider-line { flex:1;height:1px;background:var(--gold-dim); }
+    .divider-sym { font-family:var(--font-display);font-size:1rem;color:var(--gold); }
+
+    /* SECTION LABELS */
+    .eyebrow { font-family:var(--font-ui);font-size:.65rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:flex;align-items:center;gap:.8rem; }
+    .eyebrow::before { content:'';display:inline-block;width:28px;height:1px;background:var(--gold); }
+    .sec-title { font-family:var(--font-display);font-size:clamp(2.5rem,5vw,4.5rem);font-weight:300;line-height:1.05; }
+    .sec-title em { font-style:italic;color:var(--gold); }
+
+    /* DIRECTED */
+    #directed { padding:7rem 5vw; }
+    .sec-header { display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3rem; }
+    .directed-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:3px; }
+    .dc { position:relative;overflow:hidden;cursor:none;background:var(--surface); }
+    .dc.big { grid-column:span 2;height:480px; }
+    .dc.sm  { height:310px; }
+    .dc-thumb { position:absolute;inset:0;transition:transform .6s cubic-bezier(.25,.46,.45,.94); }
+    .dc:hover .dc-thumb { transform:scale(1.05); }
+    .dc-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+    .dc-ov { position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,5,.97) 0%,rgba(5,5,5,.35) 50%,rgba(5,5,5,.05) 100%); }
+    .dc-play { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);width:64px;height:64px;border-radius:50%;background:rgba(201,169,110,.12);backdrop-filter:blur(8px);border:1.5px solid rgba(201,169,110,.45);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s,transform .3s;z-index:2; }
+    .dc:hover .dc-play { opacity:1;transform:translate(-50%,-50%) scale(1); }
+    .dc-info { position:absolute;bottom:0;left:0;right:0;padding:2rem 2.2rem;z-index:2; }
+    .dc-cat { font-family:var(--font-ui);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem; }
+    .dc-title { font-family:var(--font-display);font-weight:300;line-height:1.05;margin-bottom:.5rem; }
+    .dc.big .dc-title { font-size:clamp(2rem,3.5vw,3.2rem); }
+    .dc.sm  .dc-title { font-size:1.7rem; }
+    .dc-desc { font-size:.8rem;font-weight:300;color:rgba(240,236,228,.55);line-height:1.6;max-width:500px;margin-bottom:.8rem;max-height:0;overflow:hidden;transition:max-height .4s,opacity .4s;opacity:0; }
+    .dc:hover .dc-desc { max-height:80px;opacity:1; }
+    .dc-meta { display:flex;align-items:center;gap:1.2rem; }
+    .dc-year { font-family:var(--font-ui);font-size:.62rem;letter-spacing:.18em;color:var(--muted); }
+    .dc-watch { font-family:var(--font-ui);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);text-decoration:none;display:flex;align-items:center;gap:.4rem;border-bottom:1px solid var(--gold-dim);padding-bottom:1px; }
+
+    /* CREW */
+    #crew { padding:6rem 5vw;background:var(--deep);border-top:1px solid var(--border); }
+    .crew-intro { margin-top:.6rem;font-weight:300;font-size:.88rem;color:var(--muted);max-width:520px; }
+    .crew-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:2.5rem; }
+    .cc { position:relative;overflow:hidden;cursor:none;aspect-ratio:2/3;background:var(--surface); }
+    .cc-thumb { position:absolute;inset:0;transition:transform .6s cubic-bezier(.25,.46,.45,.94); }
+    .cc:hover .cc-thumb { transform:scale(1.06); }
+    .cc-thumb img { width:100%;height:100%;object-fit:cover;display:block; }
+    .cc-ov { position:absolute;inset:0;background:linear-gradient(to top,rgba(5,5,5,.97) 0%,rgba(5,5,5,.2) 55%,transparent 100%); }
+    .cc-play { position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(.8);width:44px;height:44px;border-radius:50%;background:rgba(201,169,110,.1);border:1px solid rgba(201,169,110,.4);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s,transform .3s;z-index:2; }
+    .cc:hover .cc-play { opacity:1;transform:translate(-50%,-50%) scale(1); }
+    .cc-info { position:absolute;bottom:0;left:0;right:0;padding:1.2rem 1.1rem;z-index:2; }
+    .cc-role { font-family:var(--font-ui);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem; }
+    .cc-title { font-family:var(--font-display);font-size:1.05rem;font-weight:300;line-height:1.15;margin-bottom:.5rem; }
+    .cc-watch { font-family:var(--font-ui);font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);text-decoration:none;opacity:0;transform:translateY(6px);transition:opacity .3s,transform .3s;display:inline-flex;align-items:center;gap:.35rem; }
+    .cc:hover .cc-watch { opacity:1;transform:translateY(0); }
+
+    /* ABOUT */
+    #about { padding:8rem 5vw;display:grid;grid-template-columns:5fr 4fr;gap:8rem;align-items:center; }
+    .about-body { margin-top:2.2rem; }
+    .about-body p { font-weight:300;font-size:.97rem;line-height:1.9;color:rgba(240,236,228,.6);margin-bottom:1.2rem; }
+    .about-body p strong { color:var(--white);font-weight:400; }
+    .about-sig { font-family:var(--font-display);font-size:2.2rem;font-style:italic;font-weight:300;color:var(--gold);margin-top:2rem;opacity:.7; }
+    .photo-frame { aspect-ratio:3/4;background:var(--surface);position:relative;overflow:hidden; }
+    .photo-inner { width:100%;height:100%;background:radial-gradient(ellipse 80% 80% at 60% 30%,#1a120a 0%,#0a0a0a 100%);display:flex;align-items:center;justify-content:center; }
+    .photo-frame::before,.photo-frame::after { content:'';position:absolute;width:28px;height:28px;z-index:2; }
+    .photo-frame::before { top:12px;left:12px;border-top:1px solid var(--gold);border-left:1px solid var(--gold); }
+    .photo-frame::after  { bottom:12px;right:12px;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold); }
+    .stats-row { display:flex;gap:0;margin-top:1px; }
+    .stat { flex:1;background:var(--surface2);border:1px solid var(--border);padding:1.2rem;text-align:center;border-left:none; }
+    .stat:first-child { border-left:1px solid var(--border); }
+    .stat .n { font-family:var(--font-display);font-size:2rem;font-weight:300;color:var(--gold);display:block; }
+    .stat .l { font-family:var(--font-ui);font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-top:.2rem;display:block; }
+
+    /* CONTACT */
+    #contact { padding:8rem 5vw;text-align:center;position:relative;overflow:hidden;border-top:1px solid var(--border); }
+    .contact-glow { position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(201,169,110,.06) 0%,transparent 70%);left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none; }
+    #contact .eyebrow { justify-content:center; }
+    #contact .eyebrow::before { display:none; }
+    .contact-lead { font-family:var(--font-display);font-size:clamp(2.5rem,6vw,6rem);font-weight:300;line-height:1.05;margin:.6rem 0 1.4rem; }
+    .contact-lead em { font-style:italic;color:var(--gold); }
+    .contact-sub { font-weight:300;font-size:1rem;color:rgba(240,236,228,.5);max-width:440px;margin:0 auto 2.8rem;line-height:1.8; }
+    .clinks { display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;margin-top:2rem; }
+    .clink { display:flex;align-items:center;gap:.6rem;font-family:var(--font-ui);font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:.7rem 1.4rem;border:1px solid rgba(255,255,255,.07);transition:border-color .25s,color .25s; }
+    .clink:hover { border-color:var(--gold-dim);color:var(--gold); }
+
+    /* FOOTER */
+    footer { border-top:1px solid var(--border);padding:2rem 5vw;display:flex;align-items:center;justify-content:space-between; }
+    .foot-logo { font-family:var(--font-display);font-size:1.2rem;font-weight:300;letter-spacing:.2em;color:var(--gold);opacity:.6; }
+    footer p { font-family:var(--font-ui);font-size:.65rem;letter-spacing:.14em;color:var(--muted); }
+
+    /* MODAL */
+    .modal-bg { position:fixed;inset:0;z-index:800;background:rgba(5,5,5,.95);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .35s; }
+    .modal-bg.open { opacity:1;pointer-events:all; }
+    .modal-inner { position:relative;width:min(920px,92vw);aspect-ratio:16/9; }
+    .modal-inner iframe { width:100%;height:100%;border:none; }
+    .modal-close { position:absolute;top:-3rem;right:0;font-family:var(--font-ui);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:none;transition:color .2s;display:flex;align-items:center;gap:.5rem; }
+    .modal-close:hover { color:var(--gold); }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:none} }
+    @keyframes pulseRod { 0%,100%{opacity:.25} 50%{opacity:1} }
+    .reveal { opacity:0;transform:translateY(28px);transition:opacity .8s,transform .8s; }
+    .reveal.visible { opacity:1;transform:none; }
+
+    /* RESPONSIVE */
+    @media(max-width:960px){
+      .directed-grid{grid-template-columns:1fr}
+      .dc.big{grid-column:auto;height:320px}
+      .crew-grid{grid-template-columns:repeat(2,1fr)}
+      #about{grid-template-columns:1fr;gap:3rem}
+      .about-right{display:none}
+    }
+    @media(max-width:600px){
+      nav ul{display:none}
+      .crew-grid{grid-template-columns:repeat(2,1fr)}
+      .dc.sm{height:220px}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor-dot" id="dot"></div>
+<div class="cursor-cross" id="cross"></div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal-inner">
+    <button class="modal-close" id="modalClose">✕ &nbsp; Close</button>
+    <iframe id="modalFrame" src="" allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">Jordan <span>Voss</span></a>
+  <ul>
+    <li><a href="#directed">Directed</a></li>
+    <li><a href="#crew">Crew</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact" class="nav-hire">Inquire</a></li>
+  </ul>
+</nav>
+
+<!-- HERO — Necromancy film plays in background -->
+<section id="hero">
+  <div class="lbox lbox-t"></div>
+  <div class="lbox lbox-b"></div>
+  <div class="hero-video-wrap">
+    <iframe
+      src="https://www.youtube.com/embed/Oh_nVdA-Syk?autoplay=1&mute=1&loop=1&playlist=Oh_nVdA-Syk&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&playsinline=1&disablekb=1"
+      allow="autoplay; fullscreen" allowfullscreen title="Necromancy">
+    </iframe>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="film-strip">
+    <div class="perf"></div><div class="perf"></div><div class="perf"></div>
+    <div class="perf"></div><div class="perf"></div><div class="perf"></div>
+    <div class="perf"></div><div class="perf"></div><div class="perf"></div>
+    <div class="perf"></div><div class="perf"></div><div class="perf"></div>
+  </div>
+  <div class="timecode">TC 00:00:00:00 &nbsp;|&nbsp; 24 FPS &nbsp;|&nbsp; 4K</div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Director &nbsp;·&nbsp; Filmmaker &nbsp;·&nbsp; Cinematographer</div>
+    <h1 class="hero-name">Jordan<br/><em>Voss</em></h1>
+    <p class="hero-tag">"Every frame is a choice. Every shadow is intentional."</p>
+    <div class="hero-btns">
+      <a href="#directed" class="btn-gold">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+        View Directed Work
+      </a>
+      <a href="#contact" class="btn-ol">Get In Touch</a>
+    </div>
+  </div>
+  <div class="scroll-hint"><div class="scroll-rod"></div>Scroll</div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-sym">✦</div><div class="divider-line"></div></div>
+
+<!-- ══ DIRECTED WORK ══ -->
+<section id="directed">
+  <div class="sec-header reveal">
+    <div>
+      <div class="eyebrow">As Director</div>
+      <h2 class="sec-title">Directed <em>Work</em></h2>
+    </div>
+  </div>
+
+  <div class="directed-grid">
+
+    <!-- Film 1 — featured -->
+    <div class="dc big reveal" data-video="sOGtHFMCYhA">
+      <div class="dc-thumb"><img src="https://img.youtube.com/vi/sOGtHFMCYhA/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/sOGtHFMCYhA/hqdefault.jpg'" alt="Directed Film 1"/></div>
+      <div class="dc-ov"></div>
+      <div class="dc-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="dc-info">
+        <div class="dc-cat">Short Film — Director</div>
+        <div class="dc-title">Film I</div>
+        <div class="dc-desc">Directed by Jordan Voss. Click anywhere to watch.</div>
+        <div class="dc-meta">
+          <span class="dc-year">2024</span>
+          <span class="dc-watch"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>Watch Film</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Film 2 -->
+    <div class="dc sm reveal" data-video="7DkHLx_0UwU" style="transition-delay:.08s">
+      <div class="dc-thumb"><img src="https://img.youtube.com/vi/7DkHLx_0UwU/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/7DkHLx_0UwU/hqdefault.jpg'" alt="Directed Film 2"/></div>
+      <div class="dc-ov"></div>
+      <div class="dc-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="dc-info">
+        <div class="dc-cat">Short Film — Director</div>
+        <div class="dc-title">Film II</div>
+        <div class="dc-meta"><span class="dc-year">2024</span><span class="dc-watch"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>Watch Film</span></div>
+      </div>
+    </div>
+
+    <!-- Film 3 -->
+    <div class="dc sm reveal" data-video="sg1IveVFtmE" style="transition-delay:.14s">
+      <div class="dc-thumb"><img src="https://img.youtube.com/vi/sg1IveVFtmE/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/sg1IveVFtmE/hqdefault.jpg'" alt="Directed Film 3"/></div>
+      <div class="dc-ov"></div>
+      <div class="dc-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="dc-info">
+        <div class="dc-cat">Short Film — Director</div>
+        <div class="dc-title">Film III</div>
+        <div class="dc-meta"><span class="dc-year">2024</span><span class="dc-watch"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>Watch Film</span></div>
+      </div>
+    </div>
+
+    <!-- Film 4 -->
+    <div class="dc sm reveal" data-video="Md3xJ6pX4Fs" style="transition-delay:.2s">
+      <div class="dc-thumb"><img src="https://img.youtube.com/vi/Md3xJ6pX4Fs/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/Md3xJ6pX4Fs/hqdefault.jpg'" alt="Directed Film 4"/></div>
+      <div class="dc-ov"></div>
+      <div class="dc-play"><svg width="20" height="20" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="dc-info">
+        <div class="dc-cat">Short Film — Director</div>
+        <div class="dc-title">Film IV</div>
+        <div class="dc-meta"><span class="dc-year">2024</span><span class="dc-watch"><svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>Watch Film</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-sym">✦</div><div class="divider-line"></div></div>
+
+<!-- ══ CREW WORK ══ -->
+<section id="crew">
+  <div class="reveal">
+    <div class="eyebrow">As Crew</div>
+    <h2 class="sec-title">Films I've <em>Contributed To</em></h2>
+    <p class="crew-intro">Projects where I served as a crew member — across camera, production, and creative departments.</p>
+  </div>
+
+  <div class="crew-grid">
+
+    <div class="cc reveal" data-video="Oh_nVdA-Syk">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/Oh_nVdA-Syk/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/Oh_nVdA-Syk/hqdefault.jpg'" alt="Necromancy"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Necromancy</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="fCjLAg6OGjs" style="transition-delay:.06s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/fCjLAg6OGjs/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/fCjLAg6OGjs/hqdefault.jpg'" alt="Crew Film 1"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 01</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="keMA0xY9O3g" style="transition-delay:.1s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/keMA0xY9O3g/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/keMA0xY9O3g/hqdefault.jpg'" alt="Crew Film 2"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 02</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="Bhsh1Hebw5w" style="transition-delay:.14s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/Bhsh1Hebw5w/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/Bhsh1Hebw5w/hqdefault.jpg'" alt="Crew Film 3"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 03</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="H0IeCfAr5mg" style="transition-delay:.18s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/H0IeCfAr5mg/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/H0IeCfAr5mg/hqdefault.jpg'" alt="Crew Film 4"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 04</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="qOLcZ7m2hwM" style="transition-delay:.22s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/qOLcZ7m2hwM/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/qOLcZ7m2hwM/hqdefault.jpg'" alt="Crew Film 5"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 05</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="TRi_syYQC0I" style="transition-delay:.26s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/TRi_syYQC0I/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/TRi_syYQC0I/hqdefault.jpg'" alt="Crew Film 6"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 06</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+    <div class="cc reveal" data-video="dM0pTBy1Sq4" style="transition-delay:.3s">
+      <div class="cc-thumb"><img src="https://img.youtube.com/vi/dM0pTBy1Sq4/maxresdefault.jpg" onerror="this.src='https://img.youtube.com/vi/dM0pTBy1Sq4/hqdefault.jpg'" alt="Crew Film 7"/></div>
+      <div class="cc-ov"></div>
+      <div class="cc-play"><svg width="14" height="14" viewBox="0 0 24 24" fill="#c9a96e"><polygon points="5,3 19,12 5,21"/></svg></div>
+      <div class="cc-info">
+        <div class="cc-role">Crew</div>
+        <div class="cc-title">Film 07</div>
+        <span class="cc-watch"><svg width="9" height="9" viewBox="0 0 24 24" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg> Watch</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="divider"><div class="divider-line"></div><div class="divider-sym">✦</div><div class="divider-line"></div></div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="about-left reveal">
+    <div class="eyebrow">The Filmmaker</div>
+    <h2 class="sec-title">Telling Stories<br/>Through <em>Light</em></h2>
+    <div class="about-body">
+      <p>I'm Jordan, a <strong>director and filmmaker</strong> with a passion for visual storytelling. My work spans narrative short films, documentary, and commercial content.</p>
+      <p>I've directed my own projects and collaborated as crew across a range of productions — bringing the same level of dedication and craft to every role I take on.</p>
+      <p>I believe cinema is the most powerful language we have — and every frame deserves to be <strong>intentional</strong>.</p>
+      <div class="about-sig">— Jordan</div>
+    </div>
+  </div>
+  <div class="about-right reveal">
+    <div class="photo-frame">
+      <div class="photo-inner">
+        <svg opacity=".08" width="220" height="220" viewBox="0 0 220 220" fill="none">
+          <circle cx="110" cy="110" r="90" stroke="#c9a96e" stroke-width="1"/>
+          <circle cx="110" cy="110" r="60" stroke="#c9a96e" stroke-width=".5"/>
+          <circle cx="110" cy="110" r="28" stroke="#c9a96e" stroke-width="1"/>
+          <line x1="110" y1="20" x2="110" y2="200" stroke="#c9a96e" stroke-width=".5"/>
+          <line x1="20" y1="110" x2="200" y2="110" stroke="#c9a96e" stroke-width=".5"/>
+          <line x1="46" y1="46" x2="174" y2="174" stroke="#c9a96e" stroke-width=".5"/>
+          <line x1="174" y1="46" x2="46" y2="174" stroke="#c9a96e" stroke-width=".5"/>
+        </svg>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat"><span class="n">4</span><span class="l">Directed</span></div>
+      <div class="stat"><span class="n">8</span><span class="l">Crew Credits</span></div>
+      <div class="stat"><span class="n">12+</span><span class="l">Films Total</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="contact-glow"></div>
+  <div class="eyebrow reveal">Collaborate</div>
+  <h2 class="contact-lead reveal">Let's Make<br/><em>Something Beautiful</em></h2>
+  <p class="contact-sub reveal">Available for narrative films, documentary, brand campaigns, and creative direction. Open to new collaborations worldwide.</p>
+  <a href="mailto:hello@jordanvoss.com" class="btn-gold reveal" style="display:inline-flex;font-size:.75rem;padding:1rem 2.8rem;letter-spacing:.25em;">
+    Start A Conversation
+  </a>
+  <div class="clinks reveal">
+    <a href="#" class="clink">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>Vimeo
+    </a>
+    <a href="#" class="clink">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" stroke="currentColor" stroke-width="1.5" fill="none"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5" stroke="currentColor" stroke-width="2"/></svg>Instagram
+    </a>
+    <a href="#" class="clink">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>Email
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-logo">Jordan Voss</div>
+  <p>© 2025 — All Rights Reserved</p>
+  <p>Director &amp; Filmmaker</p>
+</footer>
+
+<script>
+  // Cursor
+  const dot=document.getElementById('dot'), cross=document.getElementById('cross');
+  let mx=0,my=0,cx=0,cy=0;
+  document.addEventListener('mousemove',e=>{ mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px'; });
+  (function tick(){ cx+=(mx-cx)*.1;cy+=(my-cy)*.1;cross.style.left=cx+'px';cross.style.top=cy+'px';requestAnimationFrame(tick); })();
+  document.querySelectorAll('a,button,.dc,.cc').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{ dot.style.width='18px';dot.style.height='18px';dot.style.background='rgba(201,169,110,.3)';cross.style.transform='translate(-50%,-50%) scale(1.7)'; });
+    el.addEventListener('mouseleave',()=>{ dot.style.width='8px';dot.style.height='8px';dot.style.background='var(--gold)';cross.style.transform='translate(-50%,-50%) scale(1)'; });
+  });
+
+  // Nav
+  window.addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('scrolled',scrollY>50));
+
+  // Modal
+  const modal=document.getElementById('modal'), frame=document.getElementById('modalFrame');
+  function openModal(id){ frame.src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0&modestbranding=1`;modal.classList.add('open');document.body.style.overflow='hidden'; }
+  function closeModal(){ modal.classList.remove('open');frame.src='';document.body.style.overflow=''; }
+  document.getElementById('modalClose').addEventListener('click',closeModal);
+  modal.addEventListener('click',e=>{ if(e.target===modal)closeModal(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape')closeModal(); });
+
+  // Clickable cards
+  document.querySelectorAll('.dc[data-video],.cc[data-video]').forEach(c=>{
+    c.addEventListener('click',()=>openModal(c.dataset.video));
+  });
+
+  // Reveal
+  const obs=new IntersectionObserver(entries=>entries.forEach(e=>{ if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);} }),{threshold:.07});
+  document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
